@@ -182,12 +182,12 @@ public class ScreenEditor extends JFrame {
 
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileFilter(new FileNameExtensionFilter(
-                "Rich Text Format (.rtf)", "rtf"));
+                "Document Format (.docx)", "docx"));
 
         if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             try {
                 File archivo = fileChooser.getSelectedFile();
-                documentoActual = gestorArchivo.cargarRTF(archivo);
+                documentoActual = gestorArchivo.cargarDOCXConZip(archivo);
 
                 if (documentoActual != null) {
                     interfaz.setTexto(documentoActual.getContenido());
@@ -196,13 +196,13 @@ public class ScreenEditor extends JFrame {
                     setTitle("Editor de Texto - " + archivo.getName());
                 } else {
                     JOptionPane.showMessageDialog(this,
-                            "No se pudo cargar el archivo RTF",
+                            "No se pudo cargar el archivo DOCX",
                             "Error",
                             JOptionPane.ERROR_MESSAGE);
                 }
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(this,
-                        "Error al abrir el archivo RTF: " + e.getMessage(),
+                        "Error al abrir el archivo DOCX: " + e.getMessage(),
                         "Error",
                         JOptionPane.ERROR_MESSAGE);
             }
@@ -280,12 +280,12 @@ public class ScreenEditor extends JFrame {
     public void guardarComo() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileFilter(new FileNameExtensionFilter(
-                "Rich Text Format (.rtf)", "rtf"));
+                "Document Format (.docx)", "docx"));
 
         if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
             File archivo = fileChooser.getSelectedFile();
-            if (!archivo.getName().endsWith(".rtf")) {
-                archivo = new File(archivo.getPath() + ".rtf");
+            if (!archivo.getName().endsWith(".docx")) {
+                archivo = new File(archivo.getPath() + ".docx");
             }
             guardarRTF(archivo);
         }
@@ -293,7 +293,7 @@ public class ScreenEditor extends JFrame {
 
     private void guardarRTF(File archivo) {
         try {
-            gestorArchivo.exportarRTF(interfaz.getTextPane(), archivo);
+            gestorArchivo.exportarDOCXConZip(interfaz.getTextPane(), archivo);
             archivoActual = archivo;
             documentoModificado = false;
             setTitle("Editor de Texto - " + archivo.getName());
@@ -315,16 +315,16 @@ public class ScreenEditor extends JFrame {
     public void exportarParaWord() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileFilter(new FileNameExtensionFilter(
-                "Rich Text Format (.rtf)", "rtf"));
+                "Document Format (.docx)", "docx"));
 
         if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
             File archivo = fileChooser.getSelectedFile();
-            if (!archivo.getName().endsWith(".rtf")) {
-                archivo = new File(archivo.getPath() + ".rtf");
+            if (!archivo.getName().endsWith(".docx")) {
+                archivo = new File(archivo.getPath() + ".docx");
             }
 
             try {
-                gestorArchivo.exportarRTF(interfaz.getTextPane(), archivo);
+                gestorArchivo.exportarDOCXConZip(interfaz.getTextPane(), archivo);
 
                 JOptionPane.showMessageDialog(this,
                         "Archivo exportado exitosamente para Word.\n"
