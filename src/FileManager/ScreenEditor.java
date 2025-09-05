@@ -264,7 +264,7 @@ public class ScreenEditor extends JFrame {
 
                 JOptionPane.showMessageDialog(this,
                         "Archivo exportado exitosamente al formato Java.\n"
-                        + "Este formato mantiene todos los formatos aplicados.",
+                      ,
                         "Exportación exitosa",
                         JOptionPane.INFORMATION_MESSAGE);
 
@@ -300,7 +300,7 @@ public class ScreenEditor extends JFrame {
 
             JOptionPane.showMessageDialog(this,
                     "Archivo guardado exitosamente.\n"
-                    + "Puedes abrirlo en Microsoft Word, LibreOffice Writer, etc.",
+                  ,
                     "Guardar",
                     JOptionPane.INFORMATION_MESSAGE);
 
