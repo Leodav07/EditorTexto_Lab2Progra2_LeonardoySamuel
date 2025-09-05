@@ -67,7 +67,6 @@ public class GestorFormato {
                 int startOffset = element.getStartOffset();
                 int endOffset = element.getEndOffset();
                 
-                // Solo agregar si tiene formato diferente al predeterminado
                 if (!fontFamily.equals("Dialog") || fontSize != 12 || fontStyle != Font.PLAIN || !color.equals(Color.BLACK)) {
                     FormatoTexto formato = new FormatoTexto(
                         fontFamily, fontSize, fontStyle, color, startOffset, endOffset
@@ -82,7 +81,7 @@ public class GestorFormato {
         return formatos;
     }
     
-    public void aplicarFormato(JTextPane pane, List<FormatoTexto> formatos){
+    public void aplicarFormato(JTextPane pane, ArrayList<FormatoTexto> formatos){
         if (formatos == null) return;
         
         doc = pane.getStyledDocument();

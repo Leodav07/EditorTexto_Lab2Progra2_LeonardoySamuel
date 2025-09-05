@@ -35,7 +35,7 @@ public class GestorArchivos implements Serializable {
             throw cl;
         } finally {
             if (inputDoc != null) {
-                try { inputDoc.close(); } catch (IOException e) { }
+                try { inputDoc.close(); } catch (IOException e) {  }
             }
         }
     }
@@ -100,18 +100,15 @@ public class GestorArchivos implements Serializable {
                 
                 writer.write("{");
                 
-                // Fuente
                 int fontIndex = getFont(fontFamily);
                 writer.write("\\f" + fontIndex);
                 
                 writer.write("\\fs" + (fontSize * 2));
                 
-                // Estilo
                 if (bold) writer.write("\\b");
                 if (italic) writer.write("\\i");
                 if (underline) writer.write("\\ul");
                 
-                // Color
                 int colorIndex = getColorIndex(color);
                 if (colorIndex > 0) {
                     writer.write("\\cf" + colorIndex);
@@ -248,7 +245,7 @@ public class GestorArchivos implements Serializable {
             throw io;
         } finally {
             if (bWriter != null) {
-                try { bWriter.close(); } catch (IOException e) { /* ignore */ }
+                try { bWriter.close(); } catch (IOException e) {  }
             }
         }
     }
