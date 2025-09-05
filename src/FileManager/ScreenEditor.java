@@ -328,7 +328,7 @@ public class ScreenEditor extends JFrame {
 
                 JOptionPane.showMessageDialog(this,
                         "Archivo exportado exitosamente para Word.\n"
-                        + "Puede abrirlo en Microsoft Word, LibreOffice Writer, etc.",
+                        ,
                         "Exportación exitosa",
                         JOptionPane.INFORMATION_MESSAGE);
 
