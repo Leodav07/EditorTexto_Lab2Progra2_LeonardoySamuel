@@ -8,6 +8,9 @@ import java.awt.Color;
 import java.awt.Font;
 import java.io.*;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import javax.swing.JTextPane;
 import javax.swing.text.*;
 
@@ -56,28 +59,28 @@ public class GestorArchivos implements Serializable {
     
     public void exportarRTF(JTextPane textPane, File file) throws IOException {
         try (FileWriter writer = new FileWriter(file)) {
-            writer.write("{\\rtf1\\ansi\\deff0");
             
-            writer.write("{\\fonttbl");
-            writer.write("{\\f0\\fnil Times New Roman;}");
-            writer.write("{\\f1\\fnil Arial;}");
-            writer.write("{\\f2\\fnil Courier New;}");
-            writer.write("}");
+            Map<Color, Integer> tablaColores = new HashMap<>();
+            List<Color> listaColores = new ArrayList<>();
+          
+            listaColores.add(Color.BLACK);      
+            listaColores.add(Color.RED);        
+            listaColores.add(Color.GREEN);      
+            listaColores.add(Color.BLUE);      
+            listaColores.add(Color.YELLOW);     
+            listaColores.add(Color.MAGENTA);   
+            listaColores.add(Color.CYAN);      
+            listaColores.add(Color.GRAY);      
+            listaColores.add(Color.WHITE);      
+            listaColores.add(Color.ORANGE);     
+            listaColores.add(Color.PINK);      
             
-            writer.write("{\\colortbl;");
-            writer.write("\\red0\\green0\\blue0;");  
-            writer.write("\\red255\\green0\\blue0;");   
-            writer.write("\\red0\\green255\\blue0;");  
-            writer.write("\\red0\\green0\\blue255;");    
-            writer.write("\\red255\\green255\\blue0;");  
-            writer.write("\\red255\\green0\\blue255;");  
-            writer.write("\\red0\\green255\\blue255;"); 
-            writer.write("\\red128\\green128\\blue128;"); 
-            writer.write("\\red255\\green255\\blue255;"); 
-            writer.write("\\red255\\green165\\blue0;");  
-            writer.write("\\red255\\green192\\blue203;"); 
-            writer.write("}");
+           
+            for (int i = 0; i < listaColores.size(); i++) {
+                tablaColores.put(listaColores.get(i), i + 1);
+            }
             
+         
             StyledDocument doc = textPane.getStyledDocument();
             String contenido = "";
             try {
@@ -85,6 +88,36 @@ public class GestorArchivos implements Serializable {
             } catch (BadLocationException e) {
                 throw new IOException("Error al leer el contenido del documento", e);
             }
+         
+            for (int i = 0; i < contenido.length(); i++) {
+                Element element = doc.getCharacterElement(i);
+                AttributeSet attrs = element.getAttributes();
+                Color color = StyleConstants.getForeground(attrs);
+                
+                if (color != null && !tablaColores.containsKey(color)) {
+                    listaColores.add(color);
+                    tablaColores.put(color, listaColores.size());
+                }
+            }
+            
+       
+            writer.write("{\\rtf1\\ansi\\deff0");
+            
+            
+            writer.write("{\\fonttbl");
+            writer.write("{\\f0\\fnil Times New Roman;}");
+            writer.write("{\\f1\\fnil Arial;}");
+            writer.write("{\\f2\\fnil Courier New;}");
+            writer.write("}");
+            
+           
+            writer.write("{\\colortbl;");
+            for (Color color : listaColores) {
+                writer.write("\\red" + color.getRed() + 
+                           "\\green" + color.getGreen() + 
+                           "\\blue" + color.getBlue() + ";");
+            }
+            writer.write("}");
             
             for (int i = 0; i < contenido.length(); i++) {
                 char c = contenido.charAt(i);
@@ -100,23 +133,29 @@ public class GestorArchivos implements Serializable {
                 
                 writer.write("{");
                 
+               
                 int fontIndex = getFont(fontFamily);
                 writer.write("\\f" + fontIndex);
                 
+              
                 writer.write("\\fs" + (fontSize * 2));
                 
+               
                 if (bold) writer.write("\\b");
                 if (italic) writer.write("\\i");
                 if (underline) writer.write("\\ul");
                 
-                int colorIndex = getColorIndex(color);
-                if (colorIndex > 0) {
-                    writer.write("\\cf" + colorIndex);
+             
+                if (color != null) {
+                    Integer colorIndex = tablaColores.get(color);
+                    if (colorIndex != null) {
+                        writer.write("\\cf" + colorIndex);
+                    }
                 }
                 
                 writer.write(" ");
                 
-                // Escribir el carácter
+               
                 if (c == '\n') {
                     writer.write("\\par");
                 } else if (c == '{' || c == '}' || c == '\\') {
@@ -130,7 +169,7 @@ public class GestorArchivos implements Serializable {
                 writer.write("}");
             }
             
-            // Cerrar RTF
+           
             writer.write("}");
         }
     }
@@ -154,23 +193,7 @@ public class GestorArchivos implements Serializable {
         }
     }
     
-    private int getColorIndex(Color color) {
-        if (color == null) return 1; 
-        
-        if (color.equals(Color.BLACK)) return 1;
-        if (color.equals(Color.RED)) return 2;
-        if (color.equals(Color.GREEN)) return 3;
-        if (color.equals(Color.BLUE)) return 4;
-        if (color.equals(Color.YELLOW)) return 5;
-        if (color.equals(Color.MAGENTA)) return 6;
-        if (color.equals(Color.CYAN)) return 7;
-        if (color.equals(Color.GRAY)) return 8;
-        if (color.equals(Color.WHITE)) return 9;
-        if (color.equals(Color.ORANGE)) return 10;
-        if (color.equals(Color.PINK)) return 11;
-        
-        return 1;
-    }
+   
     
     public DocumentoFormateado cargarRTF(File file) throws IOException {
         StringBuilder contenidoRTF = new StringBuilder();
@@ -188,6 +211,7 @@ public class GestorArchivos implements Serializable {
         
         return documento;
     }
+    
     private String extraerTextoRTF(String rtf) {
         StringBuilder texto = new StringBuilder();
         boolean dentroDeGrupo = false;

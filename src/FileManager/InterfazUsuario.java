@@ -26,6 +26,7 @@ public class InterfazUsuario {
     private JToggleButton negrita;
     private JToggleButton subrayar;
     private JButton[] botonColor;
+    private JButton botonColorPersonalizado;
     private Color curColor = Color.BLACK;
     private ScreenEditor tE;
     private Color[] colores = {
@@ -61,17 +62,51 @@ public class InterfazUsuario {
         subrayar = new JToggleButton("U");
         subrayar.setFont(new Font("Arial", Font.PLAIN, 12));
 
+     
         botonColor = new JButton[colores.length];
         for (int i = 0; i < colores.length; i++) {
             botonColor[i] = new JButton();
             botonColor[i].setBackground(colores[i]);
             botonColor[i].setPreferredSize(new Dimension(20, 20));
+            botonColor[i].setBorder(BorderFactory.createRaisedBevelBorder());
             final Color color = colores[i];
             botonColor[i].addActionListener(em -> {
                 curColor = color;
+                actualizarBotonColorPersonalizado();
                 tE.aplicarFormatoSeleccion();
             });
         }
+
+     
+        botonColorPersonalizado = new JButton("...");
+        botonColorPersonalizado.setPreferredSize(new Dimension(25, 20));
+        botonColorPersonalizado.setToolTipText("Seleccionar color personalizado");
+        botonColorPersonalizado.setBackground(curColor);
+        botonColorPersonalizado.addActionListener(ex -> mostrarSelectorColor());
+    }
+
+    private void mostrarSelectorColor() {
+      
+        Color colorSeleccionado = JColorChooser.showDialog(
+            panelPrincipal,
+            "Seleccionar Color",
+            curColor
+        );
+        
+        if (colorSeleccionado != null) {
+            curColor = colorSeleccionado;
+            actualizarBotonColorPersonalizado();
+            tE.aplicarFormatoSeleccion();
+        }
+    }
+
+    private void actualizarBotonColorPersonalizado() {
+        botonColorPersonalizado.setBackground(curColor);
+   
+        int brightness = (int) (0.299 * curColor.getRed() + 
+                               0.587 * curColor.getGreen() + 
+                               0.114 * curColor.getBlue());
+        botonColorPersonalizado.setForeground(brightness > 128 ? Color.BLACK : Color.WHITE);
     }
 
     public void crearLayout() {
@@ -103,9 +138,16 @@ public class InterfazUsuario {
         
         JPanel panelColores = new JPanel(new FlowLayout());
         panelColores.add(new JLabel("Colores:"));
+        
+     
         for (JButton boton : botonColor) {
             panelColores.add(boton);
         }
+        
+        JLabel separadorColores = new JLabel(" | ");
+        panelColores.add(separadorColores);
+        
+        panelColores.add(botonColorPersonalizado);
         
         JPanel panelSuperior = new JPanel(new BorderLayout());
         panelSuperior.add(panelHerramientas, BorderLayout.NORTH);
