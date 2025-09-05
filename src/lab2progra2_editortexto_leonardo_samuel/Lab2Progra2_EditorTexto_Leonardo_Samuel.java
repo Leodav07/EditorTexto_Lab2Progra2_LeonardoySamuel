@@ -10,7 +10,7 @@ package lab2progra2_editortexto_leonardo_samuel;
  */
 public class Lab2Progra2_EditorTexto_Leonardo_Samuel {
 
-    /**
+    /** prueba
      * @param args the command line arguments
      */
     public static void main(String[] args) {
