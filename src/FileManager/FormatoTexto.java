@@ -13,7 +13,7 @@ import java.io.Serializable;
  * @author unwir
  */
 public class FormatoTexto implements Serializable {
-    private static final long serialVersionUTD = 1;
+    private static final long serialVersionUTD = 1L;
     private String fontFamily;
     private int fontSize;
     private int fontStyle;
