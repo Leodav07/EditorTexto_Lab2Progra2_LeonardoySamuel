@@ -25,10 +25,30 @@ public class DocumentoFormateado implements Serializable {
         this.contenido = contenido;
         this.formatos = (formatos != null) ? formatos : new ArrayList<>();
     }
+
+    public String getContenido() {
+        return contenido;
+    }
     
     
     public ArrayList<FormatoTexto> getFormatos(){
         return formatos;
+    }
+    
+    public void addFormato(FormatoTexto format){
+        formatos.add(format);
+    }
+    
+    public void clearFormatos(){
+        formatos.clear();
+    }
+
+    public void setContenido(String contenido) {
+        this.contenido = contenido;
+    }
+
+    public void setFormatos(ArrayList<FormatoTexto> formatos) {
+        this.formatos = formatos;
     }
      
      
