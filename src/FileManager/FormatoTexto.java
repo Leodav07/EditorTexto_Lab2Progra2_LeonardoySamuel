@@ -81,11 +81,6 @@ public class FormatoTexto implements Serializable {
     public Font crearFont(){
         return new Font(fontFamily, fontStyle, fontSize);
     }
-            
-            
-           
-    
-    
-    
+       
     
 }
