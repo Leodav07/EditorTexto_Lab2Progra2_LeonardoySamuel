@@ -38,8 +38,8 @@ public class InterfazUsuario {
         this.tE = tE;
     }
 
-    private void initComps() {
-        panelPrincipal = new JPanel();
+    public void initComps() { 
+        panelPrincipal = new JPanel(new BorderLayout()); 
 
         textPane = new JTextPane();
         textPane.setFont(new Font("Arial", Font.PLAIN, 12));
@@ -50,7 +50,7 @@ public class InterfazUsuario {
 
         Integer[] size = {8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 42, 48, 56, 64, 72, 96, 144, 190, 240, 300};
         tamanos = new JComboBox<>(size);
-        tamanos.setSelectedIndex(12);
+        tamanos.setSelectedItem(12); 
 
         negrita = new JToggleButton("B");
         negrita.setFont(new Font("Arial", Font.BOLD, 12));
@@ -76,21 +76,23 @@ public class InterfazUsuario {
 
     public void crearLayout() {
         JPanel panelHerramientas = new JPanel(new FlowLayout(FlowLayout.LEFT));
-// Botones de archivo
+        
+        
         JButton btnNuevo = new JButton("Nuevo");
         JButton btnAbrir = new JButton("Abrir");
         JButton btnGuardar = new JButton("Guardar");
         JButton btnGuardarComo = new JButton("Guardar Como");
+        
         btnNuevo.addActionListener(e -> tE.nuevoDocumento());
         btnAbrir.addActionListener(e -> tE.abrirArchivo());
         btnGuardar.addActionListener(e -> tE.guardarArchivo());
         btnGuardarComo.addActionListener(e -> tE.guardarComo());
+        
         panelHerramientas.add(btnNuevo);
         panelHerramientas.add(btnAbrir);
         panelHerramientas.add(btnGuardar);
         panelHerramientas.add(btnGuardarComo);
         panelHerramientas.add(new JSeparator(SwingConstants.VERTICAL));
-// Controles de formato
         panelHerramientas.add(new JLabel("Fuente:"));
         panelHerramientas.add(fuentes);
         panelHerramientas.add(new JLabel("Tamaño:"));
@@ -98,31 +100,31 @@ public class InterfazUsuario {
         panelHerramientas.add(negrita);
         panelHerramientas.add(cursiva);
         panelHerramientas.add(subrayar);
-// Panel de colores
+        
         JPanel panelColores = new JPanel(new FlowLayout());
         panelColores.add(new JLabel("Colores:"));
         for (JButton boton : botonColor) {
             panelColores.add(boton);
         }
+        
         JPanel panelSuperior = new JPanel(new BorderLayout());
         panelSuperior.add(panelHerramientas, BorderLayout.NORTH);
         panelSuperior.add(panelColores, BorderLayout.SOUTH);
-// Panel central con área de texto
+        
         JScrollPane scrollPane = new JScrollPane(textPane);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        
         panelPrincipal.add(panelSuperior, BorderLayout.NORTH);
         panelPrincipal.add(scrollPane, BorderLayout.CENTER);
     }
 
-    private void configurarEventos() {
-// Eventos para aplicar formato cuando cambian los controles
+    public void configurarEventos() { 
         fuentes.addActionListener(e -> tE.aplicarFormatoSeleccion());
         tamanos.addActionListener(e -> tE.aplicarFormatoSeleccion());
         negrita.addActionListener(e -> tE.aplicarFormatoSeleccion());
         cursiva.addActionListener(e -> tE.aplicarFormatoSeleccion());
         subrayar.addActionListener(e -> tE.aplicarFormatoSeleccion());
     }
-// Getters para que el editor pueda acceder a los valores
 
     public JPanel getPanel() {
         return panelPrincipal;
@@ -153,7 +155,7 @@ public class InterfazUsuario {
             estilo |= Font.ITALIC;
         }
         if (subrayar.isSelected()) {
-            estilo |= 4; // Custom flag for underline
+            estilo |= 4;
         }
         return estilo;
     }
@@ -168,7 +170,6 @@ public class InterfazUsuario {
 
     public void limpiarTexto() {
         textPane.setText("");
+        textPane.getStyledDocument().setCharacterAttributes(0, 0, textPane.getStyle("default"), true);
     }
 }
-
-

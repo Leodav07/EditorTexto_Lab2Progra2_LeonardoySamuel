@@ -4,7 +4,6 @@
  */
 package FileManager;
 
-
 import javax.swing.*;
 import javax.swing.text.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -13,6 +12,8 @@ import java.awt.event.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 /**
  *
@@ -25,6 +26,7 @@ public class ScreenEditor extends JFrame {
     private File archivoActual;
     private GestorFormato gestorFormato;
     private GestorArchivos gestorArchivo;
+    private boolean documentoModificado = false;
     
     public ScreenEditor() {
         this.documentoActual = new DocumentoFormateado();
@@ -35,14 +37,26 @@ public class ScreenEditor extends JFrame {
     
     private void inicializarEditor() {
         setTitle("Editor de Texto - Nuevo Documento");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE); 
         setSize(900, 700);
         setLocationRelativeTo(null);
         
         interfaz = new InterfazUsuario(this);
+        interfaz.initComps(); 
+        interfaz.crearLayout(); 
+        interfaz.configurarEventos(); 
+        
         add(interfaz.getPanel(), BorderLayout.CENTER);
         
         configurarEventos();
+        interfaz.getTextPane().getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) { documentoModificado = true; }
+            @Override
+            public void removeUpdate(DocumentEvent e) { documentoModificado = true; }
+            @Override
+            public void changedUpdate(DocumentEvent e) { documentoModificado = true; }
+        });
     }
     
     private void configurarEventos() {
@@ -55,14 +69,32 @@ public class ScreenEditor extends JFrame {
             }
         });
     }
-      private boolean confirmarGuardado() {
+    
+    private boolean confirmarGuardado() {
+        if (documentoModificado) {
+            int opcion = JOptionPane.showConfirmDialog(this,"¿Desea guardar los cambios antes de continuar?", "Documento modificado", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE
+            );
+            
+            switch (opcion) {
+                case JOptionPane.YES_OPTION:
+                    guardarArchivo();
+                    return true;
+                case JOptionPane.NO_OPTION:
+                    return true;
+                case JOptionPane.CANCEL_OPTION:
+                default:
+                    return false;
+            }
+        }
         return true;
     }
+    
     public void nuevoDocumento() {
         if (confirmarGuardado()) {
             documentoActual = new DocumentoFormateado();
             archivoActual = null;
             interfaz.limpiarTexto();
+            documentoModificado = false;
             setTitle("Editor de Texto - Nuevo Documento");
         }
     }
@@ -76,18 +108,19 @@ public class ScreenEditor extends JFrame {
         if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             try {
                 archivoActual = fileChooser.getSelectedFile();
-                documentoActual = GestorArchivos.cargarDocumento(archivoActual);
+                documentoActual = gestorArchivo.cargarDoc(archivoActual);
                 
-                interfaz.setTexto(documentoActual.getContenido());
-                gestorFormato.aplicarFormatos(interfaz.getTextPane(), documentoActual.getFormatos());
-                
-                setTitle("Editor de Texto - " + archivoActual.getName());
+                if (documentoActual != null) {
+                    interfaz.setTexto(documentoActual.getContenido());
+                    gestorFormato.aplicarFormato(interfaz.getTextPane(), documentoActual.getFormatos());
+                    documentoModificado = false;
+                    setTitle("Editor de Texto   " + archivoActual.getName());
+                } else {
+                    JOptionPane.showMessageDialog(this,"No se pudo cargar el archivo", "Error",  JOptionPane.ERROR_MESSAGE);
+                }
                 
             } catch (Exception e) {
-                JOptionPane.showMessageDialog(this, 
-                    "Error al abrir el archivo: " + e.getMessage(), 
-                    "Error", 
-                    JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Error al abrir el archivo: " + e.getMessage(), "Error",  JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -116,37 +149,34 @@ public class ScreenEditor extends JFrame {
     private void guardar(File archivo) {
         try {
             documentoActual.setContenido(interfaz.getTexto());
-            documentoActual.setFormatos(gestorFormato.extraerFormatos(interfaz.getTextPane()));
+            documentoActual.setFormatos((ArrayList<FormatoTexto>) gestorFormato.getFormatos(interfaz.getTextPane()));
             
             gestorArchivo.guardarDoc(documentoActual, archivo);
             archivoActual = archivo;
-            setTitle("Editor de Texto - " + archivo.getName());
+            documentoModificado = false;
+            setTitle("Editor de Texto   " + archivo.getName());
             
-            JOptionPane.showMessageDialog(this, 
-                "Archivo guardado exitosamente", 
-                "Guardar", 
-                JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Archivo guardado exitosamente",  "Guardar", JOptionPane.INFORMATION_MESSAGE);
                 
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, 
-                "Error al guardar el archivo: " + e.getMessage(), 
-                "Error", 
-                JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error al guardar el archivo: " + e.getMessage(),  "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
     
- 
     public void aplicarFormatoSeleccion() {
-        gestorFormato.aplicarFormatoASeleccion(
+        gestorFormato.formatoSeleccion(
             interfaz.getTextPane(),
             interfaz.getFuenteSeleccionada(),
             interfaz.getTamanoSeleccionado(),
             interfaz.getEstiloSeleccionado(),
             interfaz.getColorSeleccionado()
         );
+        documentoModificado = true; 
     }
     
     public InterfazUsuario getInterfaz() {
         return interfaz;
-   }
+    }
+    
+   
 }
